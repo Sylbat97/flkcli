@@ -2,30 +2,39 @@ package set
 
 import (
 	"flkcli/cmd"
+	"flkcli/flkutils"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
-// barCmd represents the bar command
+var asUsername bool
+
+// GetUserFromArgs returns the user id from the arguments and resolves it if necessary
+var getUserIDFromArgs = func(args []string) (userid string, err error) {
+	if len(args) == 0 {
+		return "", nil
+	}
+
+	userid = args[0]
+
+	if asUsername {
+		userid, err = flkutils.ResolveId(&cmd.Client, userid)
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve user id: %w", err)
+	}
+
+	return userid, nil
+}
+
 var SetCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Manage sets",
 	Long:  `Manage sets`,
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	fmt.Println("set called")
-	// },
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(SetCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// barCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// barCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

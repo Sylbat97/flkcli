@@ -9,12 +9,15 @@ import (
 	"gopkg.in/masci/flickr.v3"
 )
 
+// LoginCmd represents the login command
+// The login command is used to authenticate the user with the Flickr API
+// The login command uses the flickr package to authenticate the user
+// The login command uses the config package to save the OAuth token and secret
 var LoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Interactive login",
-	Long:  `Interactive login`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("login called")
+	Long:  `Interactive login to authenticate the user with the Flickr API.`,
+	Run: func(command *cobra.Command, args []string) {
 		apiConfig, err := config.GetAPIConfig()
 		if err != nil {
 			fmt.Printf("Error: %s", err)

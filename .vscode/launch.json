@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "args": ["set", "list"]
+            "args": ["set", "list", "geigerwe", "--as-username"]
         }
     ]
 }

@@ -1,16 +1,30 @@
 package cmd
 
 import (
+	"flkcli/flkutils"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/masci/flickr.v3"
 )
+
+var Client flickr.FlickrClient
+
+var InitializeClient = func() error {
+	newClient, err := flkutils.GetFlickrClient()
+	if err != nil {
+		return fmt.Errorf("failed to get flickr client: %w", err)
+	}
+	Client = *newClient
+	return nil
+}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "flkcli",
 	Short: "Flickr cli",
-	Long:  `Description here`,
+	Long:  `This CLI tool is used to interact with the Flickr API.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -20,16 +34,4 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.example.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

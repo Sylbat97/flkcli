@@ -19,6 +19,7 @@ type TokenConfig struct {
 	OAuthTokenSecret string `yaml:"oauth_token_secret"`
 }
 
+// SetApiConfig sets the API key and secret in the config file
 func SetApiConfig(secret, key string) error {
 	apiConfig := APIConfig{
 		Secret: secret,
@@ -32,6 +33,7 @@ func SetApiConfig(secret, key string) error {
 	return nil
 }
 
+// SetTokenConfig sets the OAuth token and secret in the config file
 func SetTokenConfig(oauthToken, oauthTokenSecret string) error {
 	tokenConfig := TokenConfig{
 		OAuthToken:       oauthToken,
@@ -45,10 +47,11 @@ func SetTokenConfig(oauthToken, oauthTokenSecret string) error {
 	return nil
 }
 
+// GetAPIConfig returns the API config from the config file
 func GetAPIConfig() (*APIConfig, error) {
 	data, err := readConfigFile("api")
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		return nil, fmt.Errorf("failed to read api config file: %w", err)
 	}
 
 	var apiConfig APIConfig
@@ -59,10 +62,11 @@ func GetAPIConfig() (*APIConfig, error) {
 	return &apiConfig, nil
 }
 
+// GetTokenConfig returns the Token config from the config file
 func GetTokenConfig() (*TokenConfig, error) {
 	data, err := readConfigFile("token")
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		return nil, fmt.Errorf("failed to read token config file: %w", err)
 	}
 
 	var tokenConfig TokenConfig
@@ -73,6 +77,7 @@ func GetTokenConfig() (*TokenConfig, error) {
 	return &tokenConfig, nil
 }
 
+// readConfigFile reads the config file and returns the data
 func readConfigFile(file string) ([]byte, error) {
 	configFilePath, err := getConfigFilePath(file)
 	if err != nil {
@@ -86,6 +91,7 @@ func readConfigFile(file string) ([]byte, error) {
 	return data, nil
 }
 
+// writeConfigFile writes the data to the config file
 func writeConfigFile(data interface{}, file string) error {
 	configFilePath, err := getConfigFilePath(file)
 
@@ -104,6 +110,8 @@ func writeConfigFile(data interface{}, file string) error {
 	return nil
 }
 
+// getConfigFilePath returns the path to the config file
+// It creates the config directory if it does not exist
 func getConfigFilePath(file string) (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
