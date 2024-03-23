@@ -75,27 +75,38 @@ var UploadCmd = &cobra.Command{
 		printLoadingBar(bar)
 		var mutex sync.Mutex
 		var wg sync.WaitGroup
+		maxGoroutines := 20
+		guard := make(chan struct{}, maxGoroutines)
 
 		// Iterate over all the photos to upload
 		for _, filePath := range photosToUpload {
+			// Print start of upload with value of i
 			wg.Add(1)
+			guard <- struct{}{}
 			go func(filePath string) {
 				defer wg.Done()
 
 				client, err := flkutils.GetFlickrClient()
 				if err != nil {
 					fmt.Printf("Error: %s", err)
+					<-guard
 					return
 				}
-
-				resp, err := flickr.UploadFile(client, filePath, nil)
+				params := flickr.NewUploadParams()
+				// Restrict the photo to private by default
+				params.IsPublic = false
+				params.IsFamily = false
+				params.IsFriend = false
+				resp, err := flickr.UploadFile(client, filePath, params)
 				if err != nil {
 					fmt.Printf("Error: %s", err)
+					<-guard
 					return
 				}
 
 				if resp.Status != "ok" {
 					fmt.Printf("Error: %s", resp.Extra)
+					<-guard
 					return
 				}
 
@@ -113,6 +124,7 @@ var UploadCmd = &cobra.Command{
 				fmt.Printf("\nUploaded: %s\n", filePath)
 				printLoadingBar(bar)
 				mutex.Unlock()
+				<-guard
 			}(filePath)
 		}
 
