@@ -9,15 +9,12 @@ import (
 	"gopkg.in/masci/flickr.v3"
 )
 
-var Client flickr.FlickrClient
-
-var InitializeClient = func() error {
+var GetFlickrClient = func() (*flickr.FlickrClient, error) {
 	newClient, err := flkutils.GetFlickrClient()
 	if err != nil {
-		return fmt.Errorf("failed to get flickr client: %w", err)
+		return nil, fmt.Errorf("failed to get flickr client: %w", err)
 	}
-	Client = *newClient
-	return nil
+	return newClient, nil
 }
 
 // RootCmd represents the base command when called without any subcommands
