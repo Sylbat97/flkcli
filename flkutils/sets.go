@@ -27,3 +27,17 @@ func ListSets(client *flickr.FlickrClient, userid string) (total int, photosetit
 
 	return response.Photosets.Total, photoSetItems, nil
 }
+
+func AddToPhotoSet(client *flickr.FlickrClient, photoId, photoSetId string) error {
+	// Get the list of sets
+	response, err := photosets.AddPhoto(client, photoSetId, photoId)
+	if err != nil {
+		return fmt.Errorf("failed to add picture to set: %w", err)
+	}
+
+	if response.Status != "ok" {
+		return fmt.Errorf("failed to add picture to set: %s", response.Extra)
+	}
+
+	return nil
+}

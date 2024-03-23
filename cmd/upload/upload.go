@@ -17,15 +17,20 @@ type LoadingBar struct {
 	Total int
 	// The number of items loaded
 	Loaded int
-
+	// The last item loaded
 	LastLoaded string
 }
+
+// TODO
+// Add a flag to specify the directory to upload photos from if not the current directory
+// Add ability to specify a new set to create and upload photos to
 
 var UploadCmd = &cobra.Command{
 	Use:   "upload",
 	Short: "Upload photos to flickr",
 	Long:  `Upload all the photos in the specified directory to flickr`,
 	Run: func(command *cobra.Command, args []string) {
+		sets, _ := command.Flags().GetStringArray("sets")
 		// Initialize the client
 		_, err := cmd.GetFlickrClient()
 		if err != nil {
@@ -94,6 +99,14 @@ var UploadCmd = &cobra.Command{
 					return
 				}
 
+				// Iterate over all the sets to upload the photo to
+				for _, set := range sets {
+					err := flkutils.AddToPhotoSet(client, resp.ID, set)
+					if err != nil {
+						fmt.Printf("Error: %s", err)
+					}
+				}
+
 				mutex.Lock()
 				bar.Loaded++
 				bar.LastLoaded = filePath
@@ -109,6 +122,8 @@ var UploadCmd = &cobra.Command{
 }
 
 func init() {
+	// Initialize empty string array
+	UploadCmd.PersistentFlags().StringArray("sets", []string{}, "Sets to upload the photos to")
 	cmd.RootCmd.AddCommand(UploadCmd)
 }
 
