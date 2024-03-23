@@ -1,4 +1,4 @@
-package set
+package list
 
 import (
 	"fmt"
@@ -10,28 +10,28 @@ import (
 )
 
 // The list command is used to list the photo sets of a user
-var listCmd = &cobra.Command{
-	Use:   "list [userid]",
+var setCmd = &cobra.Command{
+	Use:   "sets [userid]",
 	Short: "List photo sets",
 	Long: `List photo sets of a user
 		If no user is specified, the currents user sets are listed`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(command *cobra.Command, args []string) {
 		// Initialize the client
-		err := cmd.InitializeClient()
+		client, err := cmd.GetFlickrClient()
 		if err != nil {
 			fmt.Printf("Error: %s", err)
 			return
 		}
 		// Get the user id from the arguments
-		userid, err := getUserIDFromArgs(args)
+		userid, err := getUserIDFromArgs(args, client)
 		if err != nil {
 			fmt.Printf("Error: %s", err)
 			return
 		}
 
 		// Get the list of sets
-		total, photoSetItems, err := flkutils.ListSets(&cmd.Client, userid)
+		total, photoSetItems, err := flkutils.ListSets(client, userid)
 		if err != nil {
 			fmt.Printf("Error: %s", err)
 			return
@@ -46,6 +46,6 @@ var listCmd = &cobra.Command{
 }
 
 func init() {
-	listCmd.PersistentFlags().BoolVar(&asUsername, "as-username", false, "Treat the user id as a username")
-	SetCmd.AddCommand(listCmd)
+	setCmd.PersistentFlags().BoolVar(&asUsername, "as-username", false, "Treat the user id as a username")
+	SetCmd.AddCommand(setCmd)
 }
