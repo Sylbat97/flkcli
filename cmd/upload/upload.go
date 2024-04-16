@@ -43,7 +43,7 @@ var UploadCmd = &cobra.Command{
 	Short: "Upload photos to flickr",
 	Long:  `Upload all the photos in the specified directory to flickr`,
 	Run: func(command *cobra.Command, args []string) {
-		// sets, _ := command.Flags().GetStringArray("sets")
+		sets, _ := command.Flags().GetStringArray("add-to-sets")
 		syncMode, _ := command.Flags().GetBool("sync")
 		overwrite, _ := command.Flags().GetBool("overwrite")
 		delete, _ := command.Flags().GetBool("delete")
@@ -147,13 +147,12 @@ var UploadCmd = &cobra.Command{
 						<-guard
 					}
 
-					// Iterate over all the sets to upload the photo to
-					// for _, set := range sets {
-					// 	err := flkutils.AddToPhotoSet(client, resp.ID, set)
-					// 	if err != nil {
-					// 		fmt.Printf("Error: %s", err)
-					// 	}
-					// }
+					for _, set := range sets {
+						err := flkutils.AddToPhotoSet(client, resp.ID, set)
+						if err != nil {
+							fmt.Printf("Error: %s", err)
+						}
+					}
 
 					mutex.Lock()
 					if setId == "" && syncMode {
@@ -228,7 +227,7 @@ func isPhotoInSet(file fs.DirEntry, photosInSet []photosets.Photo) (bool, string
 
 func init() {
 	// Initialize empty string array
-	//UploadCmd.PersistentFlags().StringArray("sets", []string{}, "Sets to upload the photos to") TODO move to separate command
+	UploadCmd.PersistentFlags().StringArray("add-to-sets", []string{}, "IDs of sets to upload the photos to")
 	UploadCmd.PersistentFlags().BoolVarP(&syncMode, "sync", "s", false, "Sync mode")
 	UploadCmd.PersistentFlags().BoolVarP(&overwrite, "overwrite", "o", false, "Overwrite already existing photos")
 	UploadCmd.PersistentFlags().BoolVarP(&delete, "delete", "d", false, "Delete distant photos from flickr that are not in the local directory")
