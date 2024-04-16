@@ -10,7 +10,9 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "args": ["set", "list", "geigerwe", "--as-username"]
+            "args": ["upload", "-sd", "geer-20240414"],
+            "cwd": "/run/media/sylbat/Plex/jpeg/birds",
+            "console": "integratedTerminal"
         }
     ]
 }
